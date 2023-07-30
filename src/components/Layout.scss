@@ -1,0 +1,21 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+
+  button {
+    width: auto;
+  }
+
+  [data-grow] {
+    flex-grow: 1;
+  }
+
+  & > * {
+    margin: 0 !important;
+  }
+
+  &.align-top {
+    align-items: flex-start;
+  }
+}
