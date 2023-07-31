@@ -2,8 +2,10 @@ const jsdom = require("jsdom");
 const fs = require("fs/promises");
 
 async function prepare() {
-  if (!(await fs.stat("./data"))) {
-    throw new Error("No data to process.");
+  try {
+    await fs.stat("./data");
+  } catch (e) {
+    throw new Error("No data directory found. Run bin/download.js first.");
   }
 
   try {

@@ -3,6 +3,6 @@
 set -e
 
 node download.js
-node ingest.js
 node process.js
+node ingest.js
 node ping.js
