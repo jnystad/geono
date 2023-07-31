@@ -19,6 +19,7 @@ export function MainLayout() {
 
   const { id } = useParams<{ id: string }>();
   const selected = useMemo(() => results?.find((r) => r.uuid === id), [results, id]);
+  const [firstAfterSearch, setFirstAfterSearch] = useState(true);
   const navigate = useNavigate();
 
   const handleSearch = useCallback(
@@ -35,6 +36,7 @@ export function MainLayout() {
         });
 
         setResults(res.data);
+        setFirstAfterSearch(true);
         resultsRef.current?.scrollTo(0, 0);
       } catch (e) {
         console.error(e);
@@ -55,17 +57,20 @@ export function MainLayout() {
 
   const handleKey = useCallback(
     (e: KeyboardEvent<HTMLElement>) => {
-      if (!results) return;
+      if (!results || !results.length) return;
+      let newUuid;
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          if (selected) {
+          if (firstAfterSearch) {
+            newUuid = results[0].uuid;
+          } else if (selected) {
             const index = results.indexOf(selected);
             if (index < results.length - 1) {
-              navigate(`/id/${results[index + 1].uuid}`);
+              newUuid = results[index + 1].uuid;
             }
           } else if (results.length > 0) {
-            navigate(`/id/${results[0].uuid}`);
+            newUuid = results[0].uuid;
           }
           break;
         case "ArrowUp":
@@ -73,23 +78,25 @@ export function MainLayout() {
           if (selected) {
             const index = results.indexOf(selected);
             if (index > 0) {
-              navigate(`/id/${results[index - 1].uuid}`);
+              newUuid = results[index - 1].uuid;
             }
           }
           break;
       }
+      if (newUuid) {
+        navigate(`/id/${newUuid}`);
+        const el = document.getElementById(newUuid);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
     },
-    [results, selected, navigate]
+    [results, selected, navigate, firstAfterSearch]
   );
 
   useEffect(() => {
-    if (selected) {
-      const el = document.getElementById(selected.uuid);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    }
-  }, [selected]);
+    setFirstAfterSearch(false);
+  }, [selected?.uuid]);
 
   return (
     <>

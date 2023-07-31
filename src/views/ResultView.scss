@@ -41,6 +41,7 @@
       object-fit: cover;
       margin: 0 0 1rem 1rem;
       border-radius: var(--border-radius);
+      background: rgba(128, 128, 128, 0.25);
 
       @media (max-width: 800px) {
         display: block;

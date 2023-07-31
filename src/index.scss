@@ -22,6 +22,23 @@ $primary-hue: 215;
   }
 }
 
+body {
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--muted-border-color);
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--muted-color);
+  border-radius: 4px;
+}
+
 h2,
 h3,
 h4,
@@ -74,6 +91,7 @@ aside {
 
   &:focus {
     border-left-color: var(--primary);
+    outline: none;
   }
 }
 
