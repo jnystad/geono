@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs/promises");
 const jsdom = require("jsdom");
 const { post } = require("./lib/request");
 
@@ -22,20 +22,22 @@ const requestTemplate = `<?xml version="1.0" ?>
 </csw:GetRecords>
 `;
 
-function prepare() {
-  if (!fs.statSync("./data")) {
-    fs.mkdirSync("./data", { recursive: true });
+async function prepare() {
+  try {
+    await fs.stat("./data");
+  } catch (e) {
+    await fs.mkdir("./data", { recursive: true });
     return;
   }
 
   for (const file of fs.readdirSync("./data")) {
-    fs.unlinkSync(`./data/${file}`);
+    await fs.unlink(`./data/${file}`);
   }
 }
 
 async function run() {
   console.log("Preparing data directory...");
-  prepare();
+  await prepare();
 
   let total = -1;
   let next = 1;
@@ -56,7 +58,7 @@ async function run() {
     for (const record of results.querySelectorAll("gmd\\:MD_Metadata")) {
       const id = record.querySelector("gmd\\:fileIdentifier").textContent.trim();
       const file = `./data/${id}.xml`;
-      fs.writeFileSync(file, record.outerHTML, "utf8");
+      await fs.writeFile(file, record.outerHTML, "utf8");
     }
 
     const complete = Math.round((next / total) * 100);
