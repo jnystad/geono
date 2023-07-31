@@ -5,16 +5,17 @@ import { Result } from "./components/Result";
 import { useDebounce } from "./hooks/useDebounce";
 import { LoadingMask } from "./components/LoadingMask";
 import { ResultView } from "./views/ResultView";
-import { Outlet, Route, Routes, useNavigate, useParams } from "react-router";
+import { Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { SearchResult } from "./types/SearchResult";
+import "./App.scss";
 
-export function MainLayout() {
+function MainLayout() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>();
   const [loading, setLoading] = useState(false);
   const lastSearch = useRef("");
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query, 750);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams<{ id: string }>();
@@ -25,26 +26,30 @@ export function MainLayout() {
   const handleSearch = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (query === lastSearch.current) return;
-      lastSearch.current = query;
+      if (debouncedQuery === lastSearch.current) return;
+      lastSearch.current = debouncedQuery;
 
       setLoading(true);
 
       try {
         const res = await axios.get<SearchResult[]>("/api/search", {
-          params: { q: query, limit: 100 },
+          params: { q: debouncedQuery, limit: 100 },
         });
 
         setResults(res.data);
         setFirstAfterSearch(true);
         resultsRef.current?.scrollTo(0, 0);
+
+        if (window.innerWidth <= 1000 && window.location.pathname !== "/") {
+          navigate("/");
+        }
       } catch (e) {
         console.error(e);
         setResults(undefined);
       }
       setLoading(false);
     },
-    [query]
+    [debouncedQuery, navigate]
   );
 
   useEffect(() => {
@@ -116,11 +121,9 @@ export function MainLayout() {
             </button>
           </Row>
           <p
+            className="hint"
             style={{
               opacity: results?.length ? 0.5 : 0,
-              transition: "opacity 500ms ease-out",
-              textAlign: "center",
-              margin: "0.25rem 0 0 0",
             }}
           >
             <small>Bruk piltastene (opp og ned) for å navigere gjennom resultatene.</small>

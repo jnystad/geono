@@ -18,4 +18,11 @@
   &.align-top {
     align-items: flex-start;
   }
+  &.align-bottom {
+    align-items: flex-end;
+  }
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
 }

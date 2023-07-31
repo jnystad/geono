@@ -134,7 +134,7 @@ export function ResultView() {
 
               <h3>Detaljer</h3>
               {result.crs?.length ? <CrsList crs={result.crs} /> : null}
-              <div className="row align-top">
+              <Row align="top" wrap>
                 <dl>
                   <dt>Utgiver</dt>
                   <dd>{result.publisher}</dd>
@@ -148,22 +148,22 @@ export function ResultView() {
                   <dd>{result.published}</dd>
                 </dl>
                 <dl>
-                  <dt>Bruksbegrensninger</dt>
-                  <dd>{result.constraints?.useLimitation}</dd>
-                  <dt>Tilgangsrestriksjoner</dt>
+                  <dt>Bruksbegrens&shy;ninger</dt>
+                  <dd>{result.constraints?.useLimitation ?? "-"}</dd>
+                  <dt>Tilgangs&shy;restriksjoner</dt>
                   <dd>{toAccessText(result.constraints?.accessConstraints)}</dd>
-                  <dt>Brukerrestriksjoner</dt>
+                  <dt>Bruker&shy;restriksjoner</dt>
                   <dd>
                     {result.constraints?.useConstraintsLink ? (
                       <a href={result.constraints.useConstraintsLink} target="_blank" rel="noreferrer">
                         {result.constraints.useConstraintsText ?? result.constraints.useConstraints}
                       </a>
                     ) : (
-                      result.constraints?.useConstraints
+                      result.constraints?.useConstraints ?? "-"
                     )}
                   </dd>
-                  <dt>Sikkerhetsnivå</dt>
-                  <dd>{toSecurityText(result.constraints?.securityConstraints)}</dd>
+                  <dt>Sikkerhets&shy;nivå</dt>
+                  <dd>{toSecurityText(result.constraints?.securityConstraints) ?? "-"}</dd>
                   {!!result.constraints?.securityConstraintsNote && (
                     <>
                       <dt>Sikkerhetsgradering, merknad</dt>
@@ -177,7 +177,7 @@ export function ResultView() {
                     </>
                   )}
                 </dl>
-              </div>
+              </Row>
 
               <details>
                 <summary>JSON</summary>

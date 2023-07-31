@@ -15,7 +15,7 @@ export function CrsList({ crs }: { crs: string[] }) {
   }, [crs]);
   return (
     <>
-      <h4>Projeksjoner</h4>
+      <h5>Projeksjoner</h5>
       <p>
         {epsg.map((c, i) => (
           <a href={`https://epsg.io/${c.split(":").pop()}`} key={i} className="tag" target="_blank" rel="noreferrer">
