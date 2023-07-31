@@ -1,35 +1,15 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
+const sqlite3 = require("sqlite3");
+const sqlite = require("./lib/sqlite");
+const path = require("path");
+const chokidar = require("chokidar");
+const fs = require("fs/promises");
 
-process.chdir(__dirname);
+const dbFilePath = process.env.DB_FILE_PATH || path.join(__dirname, "./db.sqlite");
+
+let db;
 
 const app = express();
-
-const db = new sqlite3.Database("./db.sqlite", sqlite3.OPEN_READONLY | sqlite3.OPEN_SHAREDCACHE);
-
-function dbGetAsync(sql, params) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
-}
-
-function dbAllAsync(sql, params) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
-}
 
 app.get("/api/search", async (req, res) => {
   const { q, limit, offset } = req.query;
@@ -48,7 +28,7 @@ app.get("/api/search", async (req, res) => {
       .replace(/[^\p{L}\p{N}]/gu, " ")
       .split(/\s+/)
       .filter(Boolean);
-    const rows = await dbAllAsync(sql, [
+    const rows = await db.allAsync(sql, [
       terms.length === 0 ? "_" : `(${terms.join(" ")}) OR (${terms.map((term) => term + "*").join(" ")})`,
       parseInt(limit || "10"),
       parseInt(offset || "0"),
@@ -78,22 +58,22 @@ app.get("/api/id/:uuid", async (req, res) => {
     WHERE uuid = ?
   `;
   try {
-    const row = await dbGetAsync(sql, [uuid]);
+    const row = await db.getAsync(sql, [uuid]);
 
-    const parent = row.parent ? await dbGetAsync(sql, [row.parent]) : undefined;
+    const parent = row.parent ? await db.getAsync(sql, [row.parent]) : undefined;
     const childrenSql = `
       SELECT uuid, title, publisher, type, protocol, is_open, graphics
       FROM csw_records
       WHERE parent = ?
     `;
-    const children = await dbAllAsync(childrenSql, [uuid]);
+    const children = await db.allAsync(childrenSql, [uuid]);
 
     const operatedOnBySql = `
       SELECT r.uuid, r.title, r.publisher, r.type, r.protocol, r.is_open, r.graphics
       FROM csw_records AS r, json_each(r.spec->'operatesOn')
       WHERE ? = json_each.value
     `;
-    const operatedOnBy = await dbAllAsync(operatedOnBySql, [uuid]);
+    const operatedOnBy = await db.allAsync(operatedOnBySql, [uuid]);
 
     let operatesOn = [];
     const spec = row.spec ? JSON.parse(row.spec) : undefined;
@@ -103,7 +83,7 @@ app.get("/api/id/:uuid", async (req, res) => {
         FROM csw_records
         WHERE uuid IN (${spec.operatesOn.map(() => "?").join(",")})
       `;
-      operatesOn = await dbAllAsync(sqlMany, spec.operatesOn);
+      operatesOn = await db.allAsync(sqlMany, spec.operatesOn);
     }
 
     res.json({
@@ -138,7 +118,29 @@ app.get("/api/id/:uuid", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
+  const dbWatcher = chokidar.watch(dbFilePath, { awaitWriteFinish: true, ignoreInitial: true });
+
+  try {
+    db = await sqlite.openAsync(dbFilePath, sqlite3.OPEN_READONLY | sqlite3.OPEN_SHAREDCACHE);
+    console.log("Database opened.");
+  } catch (err) {
+    console.error("Failed to open database:", err.message);
+  }
+
+  dbWatcher.on("all", async () => {
+    try {
+      await fs.stat(dbFilePath);
+    } catch (err) {
+      return;
+    }
+
+    console.log("Database changed, reopening...");
+    if (db) await db.closeAsync();
+    db = await sqlite.openAsync(dbFilePath, sqlite3.OPEN_READONLY | sqlite3.OPEN_SHAREDCACHE);
+    console.log("Database reopened.");
+  });
+
   console.log("Listening on http://localhost:3000");
 });
 
