@@ -36,6 +36,17 @@ async function prepare() {
 }
 
 async function run() {
+  try {
+    // Do not download again if previous completed within the last 24 hours
+    const stat = await fs.stat("./data/report.json");
+    if (Date.now() - stat.mtimeMs < 24 * 60 * 60 * 1000) {
+      console.log("Previous download completed within the last 24 hours.");
+      return;
+    }
+  } catch (e) {
+    console.log("No report found, downloading...");
+  }
+
   console.log("Preparing data directory...");
   await prepare();
 
@@ -68,6 +79,7 @@ async function run() {
     }
   }
   console.log("Done!");
+  fs.writeFileSync("./data/report.json", JSON.stringify({ total }));
 }
 
 run();

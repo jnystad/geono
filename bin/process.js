@@ -6,7 +6,9 @@ async function prepare() {
     throw new Error("No data to process.");
   }
 
-  if (!(await fs.stat("./records"))) {
+  try {
+    await fs.stat("./records");
+  } catch (e) {
     await fs.mkdir("./records", { recursive: true });
     return;
   }
@@ -27,6 +29,7 @@ async function run() {
   let nextLog = 10;
   for (let i = 0; i < files.length; ++i) {
     const file = files[i];
+    if (!file.endsWith(".xml")) continue;
 
     await processFile(file);
 
