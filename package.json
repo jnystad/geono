@@ -9,7 +9,7 @@
     "check": "npm-run-all -p check:*",
     "check:lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "check:types": "tsc --noEmit",
-    "server": "nodemon bin/server.js",
+    "server": "nodemon -w bin bin/server.js",
     "build": "tsc && vite build"
   },
   "engines": {

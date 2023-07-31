@@ -138,7 +138,12 @@ export function MainLayout() {
             <p>Skriv inn det du leter etter i søkefeltet over for å søke i norske geodata.</p>
             <p>Dette er en uoffisiell tjeneste som søker i Geonorges oversikt over datasett og tjenester.</p>
             <p>Datagrunnlaget blir synkronisert ukentlig.</p>
-            <p>Tjenesten er utviklet av Jørgen Nystad.</p>
+            <p style={{ opacity: 0.8 }}>
+              Utviklet av Jørgen Nystad.{" "}
+              <a href="https://github.com/jnystad/geono" target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+            </p>
           </div>
         )}
         {loading && <LoadingMask />}

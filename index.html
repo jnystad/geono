@@ -4,11 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#105AC1" />
-    <meta name="description" content="" />
+    <meta
+      name="description"
+      content="Søk i norske geografiske data og tjenester. En alternativ klient for data publisert i Geonorge."
+    />
     <title>Finn norske geodata</title>
+    <style type="text/css">
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #11191f;
+          color: #fff;
+        }
+      }
+      .placeholder {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+    </style>
   </head>
   <body>
     <div id="root">
+      <div class="placeholder">
+        <h3>Finn norske geodata</h3>
+        <p>Skriv inn det du leter etter i søkefeltet over for å søke i norske geodata.</p>
+        <p>Dette er en uoffisiell tjeneste som søker i Geonorges oversikt over datasett og tjenester.</p>
+        <p>Datagrunnlaget blir synkronisert ukentlig.</p>
+        <p style="opacity: 0.8">
+          Utviklet av Jørgen Nystad.
+          <a href="https://github.com/jnystad/geono" target="_blank" rel="noreferrer">GitHub</a>
+        </p>
+      </div>
     </div>
     <script type="module" src="/src/index.tsx"></script>
   </body>
