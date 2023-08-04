@@ -5,7 +5,7 @@ import { Result } from "./components/Result";
 import { useDebounce } from "./hooks/useDebounce";
 import { LoadingMask } from "./components/LoadingMask";
 import { ResultView } from "./views/ResultView";
-import { Outlet, Route, Routes, useLocation, useNavigate, useParams } from "react-router";
+import { Outlet, Route, Routes, useNavigate, useParams } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 import { SearchResult } from "./types/SearchResult";
 import "./App.scss";

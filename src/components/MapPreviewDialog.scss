@@ -1,0 +1,43 @@
+.map-preview-dialog {
+  max-width: 1200px;
+  width: 98vw;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  height: 95vh;
+  overflow: hidden;
+
+  header,
+  section {
+    margin: 0;
+  }
+
+  section {
+    position: relative;
+    padding: 0;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+    overflow: auto;
+
+    form {
+      padding: 1rem;
+      margin: 0;
+    }
+
+    .error {
+      position: absolute;
+      top: 40%;
+      z-index: 1;
+      color: var(--del-color);
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  .map {
+    background: #fff;
+  }
+}

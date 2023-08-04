@@ -66,7 +66,7 @@ button {
   }
 }
 
-header {
+#root > header {
   grid-area: header;
   padding: var(--block-padding);
   border-bottom: 1px solid var(--muted-border-color);
@@ -79,7 +79,7 @@ header {
   }
 }
 
-aside {
+#root > aside {
   grid-area: aside;
 
   @media (max-width: 1000px) {
@@ -95,7 +95,7 @@ aside {
   }
 }
 
-main {
+#root > main {
   position: relative;
   z-index: 1;
   width: 70vw;
@@ -163,4 +163,17 @@ dl {
 
 details {
   margin-top: 2rem;
+}
+
+dialog article p:last-of-type {
+  margin-bottom: 1rem;
+}
+dialog article p:last-child {
+  margin-bottom: 0;
+}
+
+input:invalid,
+textarea:invalid,
+select:invalid {
+  border: 1px solid var(--del-color);
 }

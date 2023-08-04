@@ -1,7 +1,11 @@
-import { IconCheck, IconCopy, IconDownload, IconDownloadOff, IconExternalLink } from "@tabler/icons-react";
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
+import { IconCheck, IconCopy, IconDownload, IconDownloadOff, IconExternalLink, IconMap } from "@tabler/icons-react";
+
+const MapPreviewDialog = lazy(() => import("./MapPreviewDialog").then((m) => ({ default: m.MapPreviewDialog })));
 
 export function UsageLink({ protocol, url, layer }: { protocol: string; url: string; layer?: string }) {
+  const [preview, setPreview] = useState(false);
+
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (copied) {
@@ -31,6 +35,11 @@ export function UsageLink({ protocol, url, layer }: { protocol: string; url: str
     case "OGC:WMTS":
       return (
         <p className="row">
+          {protocol === "OGC:WMTS" && (
+            <button type="button" className="contrast" onClick={() => setPreview(true)}>
+              Forhåndsvis i kart <IconMap />
+            </button>
+          )}
           <button type="button" onClick={handleCopy} title={url}>
             Kopier lenke til {protocol.split(":").pop()} GetCapabilities {copied ? <IconCheck /> : <IconCopy />}
           </button>
@@ -38,6 +47,11 @@ export function UsageLink({ protocol, url, layer }: { protocol: string; url: str
             Åpne i nettleser <IconExternalLink />
           </a>
           {layer && <span>Kartlag: {layer}</span>}
+          {preview && (
+            <Suspense fallback={<dialog open />}>
+              <MapPreviewDialog url={url} protocol={protocol} layer={layer} onClose={() => setPreview(false)} />
+            </Suspense>
+          )}
         </p>
       );
 
