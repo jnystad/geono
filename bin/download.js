@@ -30,7 +30,8 @@ async function prepare() {
     return;
   }
 
-  for (const file of fs.readdirSync("./data")) {
+  const files = await fs.readdir("./data");
+  for (const file of files) {
     await fs.unlink(`./data/${file}`);
   }
 }
@@ -79,7 +80,7 @@ async function run() {
     }
   }
   console.log("Done!");
-  fs.writeFileSync("./data/report.json", JSON.stringify({ total }));
+  await fs.writeFile("./data/report.json", JSON.stringify({ total }));
 }
 
 run();
