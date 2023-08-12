@@ -3,7 +3,7 @@ import { IconCheck, IconCopy, IconDownload, IconDownloadOff, IconExternalLink, I
 
 const MapPreviewDialog = lazy(() => import("./MapPreviewDialog").then((m) => ({ default: m.MapPreviewDialog })));
 
-export function UsageLink({ protocol, url, layer }: { protocol: string; url: string; layer?: string }) {
+export function UsageLink({ id, protocol, url, layer }: { id: string; protocol: string; url: string; layer?: string }) {
   const [preview, setPreview] = useState(false);
 
   const [copied, setCopied] = useState(false);
@@ -35,7 +35,7 @@ export function UsageLink({ protocol, url, layer }: { protocol: string; url: str
     case "OGC:WMTS":
       return (
         <p className="row">
-          {protocol === "OGC:WMTS" && (
+          {(protocol === "OGC:WMTS" || protocol === "OGC:WMS") && (
             <button type="button" className="contrast" onClick={() => setPreview(true)}>
               Forhåndsvis i kart <IconMap />
             </button>
@@ -49,7 +49,7 @@ export function UsageLink({ protocol, url, layer }: { protocol: string; url: str
           {layer && <span>Kartlag: {layer}</span>}
           {preview && (
             <Suspense fallback={<dialog open />}>
-              <MapPreviewDialog url={url} protocol={protocol} layer={layer} onClose={() => setPreview(false)} />
+              <MapPreviewDialog id={id} url={url} protocol={protocol} layer={layer} onClose={() => setPreview(false)} />
             </Suspense>
           )}
         </p>

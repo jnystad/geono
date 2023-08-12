@@ -8,7 +8,7 @@
   top: 64px;
   background: linear-gradient(0deg, rgba(34, 61, 180, 0.2) 33%, var(--primary) 100%);
   box-sizing: border-box;
-  animation: rotation 1s linear infinite;
+  animation: rotate 1s linear infinite;
   transition: opacity 0.3s ease-in-out;
   opacity: 0;
 
@@ -27,13 +27,5 @@
     height: 20px;
     border-radius: 50%;
     background: #fff;
-  }
-}
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }

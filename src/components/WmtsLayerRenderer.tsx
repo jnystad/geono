@@ -5,21 +5,24 @@ import WMTS, { optionsFromCapabilities } from "ol/source/WMTS";
 import { useWmtsCapabilities } from "../hooks/useWmtsCapabilities";
 import { transformExtent } from "ol/proj";
 import { toSrs } from "../utils/toSrs";
+import { IconLoader2 } from "@tabler/icons-react";
+import { containsExtent, intersects } from "ol/extent";
 
 export function WmtsLayerRenderer({
+  id,
   map,
-  url,
   layer: initialLayer,
   projection,
   onProjectionChange,
 }: {
+  id: string;
   map?: Map;
   url: string;
   layer?: string;
   projection: string;
   onProjectionChange: (projection: string) => void;
 }) {
-  const { capabilities } = useWmtsCapabilities(url);
+  const { capabilities, loading } = useWmtsCapabilities(`/api/wmts/capabilities/${id}`);
   const [layer, setLayer] = useState(initialLayer);
   const [style, setStyle] = useState<string>();
   const [matrixSet, setMatrixSet] = useState<string>();
@@ -103,8 +106,14 @@ export function WmtsLayerRenderer({
         if (bbox[0] === -180.0 && bbox[2] === 180.0 && bbox[1] === -90.0 && bbox[3] === 90.0) {
           return;
         }
-        const extent = transformExtent(bbox, "EPSG:4326", projection);
-        map.getView().fit(extent);
+        const layerExtent = transformExtent(bbox, "EPSG:4326", projection);
+        const extent = map.getView().calculateExtent();
+        if (
+          !intersects(extent, layerExtent) ||
+          containsExtent(extent, layerExtent) ||
+          (map.getView().getZoom() ?? 0) < 6
+        )
+          map.getView().fit(layerExtent);
       }
     }
     initLayer();
@@ -122,7 +131,12 @@ export function WmtsLayerRenderer({
   }, [layerDef, capabilities]);
 
   if (layers.length === 0)
-    return (
+    return loading ? (
+      <p className="loading row">
+        <IconLoader2 />
+        Laster...
+      </p>
+    ) : (
       <p className="error">
         Ingen tilgjengelige kartlag! Det kan hende denne tjenesten krever autentisering eller har andre begrensninger.
       </p>
@@ -130,7 +144,7 @@ export function WmtsLayerRenderer({
 
   return (
     <form className="row wrap" onSubmit={(e) => e.preventDefault()}>
-      <select value={layer} onChange={(e) => setLayer(e.target.value)} required data-grow>
+      <select value={layer} onChange={(e) => setLayer(e.target.value)} required>
         <option value="">Velg lag</option>
         {layers.map((layer) => (
           <option key={layer.id} value={layer.id}>
@@ -141,6 +155,9 @@ export function WmtsLayerRenderer({
       </select>
       {supportedStyles && supportedStyles.length > 1 && (
         <select value={style} onChange={(e) => setStyle(e.target.value)}>
+          <option value="" disabled>
+            Velg stil
+          </option>
           {supportedStyles.map((style) => (
             <option key={style} value={style}>
               {style}
@@ -148,7 +165,14 @@ export function WmtsLayerRenderer({
           ))}
         </select>
       )}
-      <select value={matrixSet} onChange={(e) => e.target.value && setMatrixSet(e.target.value)}>
+      <select
+        value={matrixSet}
+        onChange={(e) => e.target.value && setMatrixSet(e.target.value)}
+        style={{ flexBasis: "100px" }}
+      >
+        <option disabled value="">
+          Velg matrise
+        </option>
         {matrixSets.map((set) => (
           <option
             key={set.id}

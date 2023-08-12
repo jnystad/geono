@@ -10,7 +10,7 @@ export function useResult(id: string) {
       setResult(undefined);
       try {
         const res = await axios.get<CswRecord>(`/api/id/${id}`);
-        setResult(res.data);
+        setResult(prepareResult(res.data));
       } catch (error) {
         console.error(error);
         setResult(null);
@@ -19,5 +19,18 @@ export function useResult(id: string) {
     fetchResult();
   }, [id]);
 
+  return result;
+}
+
+function prepareProtocol(protocol?: string) {
+  if (!protocol) return undefined;
+  if (protocol.startsWith("OGC:WMS")) return "OGC:WMS";
+  if (protocol.startsWith("OGC:WMTS")) return "OGC:WMTS";
+  if (protocol.startsWith("OGC:WFS")) return "OGC:WFS";
+  return protocol;
+}
+
+function prepareResult(result: CswRecord) {
+  result.protocol = prepareProtocol(result.protocol);
   return result;
 }

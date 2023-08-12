@@ -10,6 +10,7 @@ import { TypeIcon } from "../components/TypeIcon";
 import "./ResultView.scss";
 import { Link } from "react-router-dom";
 import { RenderText } from "./RenderText";
+import { Constraints } from "../types/EntryRecord";
 
 export function ResultView() {
   const { id } = useParams<{ id: string }>();
@@ -59,13 +60,7 @@ export function ResultView() {
                   ) : (
                     <IconLock color="var(--del-color)" />
                   )}{" "}
-                  {result.constraints?.useConstraintsLink ? (
-                    <a href={result.constraints.useConstraintsLink} target="_blank" rel="noreferrer">
-                      {result.constraints?.useConstraintsText ?? result.constraints?.useConstraints}
-                    </a>
-                  ) : (
-                    result.constraints?.useConstraintsText ?? result.constraints?.useConstraints
-                  )}
+                  <UseContraints constraints={result.constraints} />
                 </span>{" "}
                 <span>
                   <TypeIcon type={result.type} protocol={result.protocol} /> {toTypeText(result.type)} fra{" "}
@@ -98,7 +93,7 @@ export function ResultView() {
               <hr />
 
               {result.protocol && result.url ? (
-                <UsageLink protocol={result.protocol} url={result.url} layer={result.layer} />
+                <UsageLink id={result.uuid} protocol={result.protocol} url={result.url} layer={result.layer} />
               ) : null}
 
               {relatedServices.length ? (
@@ -154,13 +149,7 @@ export function ResultView() {
                   <dd>{toAccessText(result.constraints?.accessConstraints)}</dd>
                   <dt>Bruker&shy;restriksjoner</dt>
                   <dd>
-                    {result.constraints?.useConstraintsLink ? (
-                      <a href={result.constraints.useConstraintsLink} target="_blank" rel="noreferrer">
-                        {result.constraints.useConstraintsText ?? result.constraints.useConstraints}
-                      </a>
-                    ) : (
-                      result.constraints?.useConstraints ?? "-"
-                    )}
+                    <UseContraints constraints={result.constraints} />
                   </dd>
                   <dt>Sikkerhets&shy;nivå</dt>
                   <dd>{toSecurityText(result.constraints?.securityConstraints) ?? "-"}</dd>
@@ -216,11 +205,29 @@ function toAccessText(text: string | undefined) {
     case "no restrictions":
       return "Åpne data";
     case "norway digital restricted":
-      return "Norge digitalt";
+      return "Norge digitalt (begrenset)";
     case "restricted":
       return "Begrenset";
     case "confidential":
       return "Fortrolig";
   }
   return text;
+}
+
+function toUseText(text: string | undefined) {
+  switch (text) {
+    case "otherRestrictions":
+      return "Andre restriksjoner";
+  }
+  return text;
+}
+
+function UseContraints({ constraints }: { constraints?: Constraints }) {
+  return constraints?.useConstraintsLink ? (
+    <a href={constraints.useConstraintsLink} target="_blank" rel="noreferrer">
+      {constraints?.useConstraintsText ?? constraints?.useConstraints}
+    </a>
+  ) : (
+    <>{toUseText(constraints?.useConstraintsText ?? constraints?.useConstraints) ?? "-"}</>
+  );
 }

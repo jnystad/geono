@@ -1,5 +1,5 @@
 .map-preview-dialog {
-  max-width: 1200px;
+  max-width: 1600px;
   width: 98vw;
   padding: 0;
   margin: 0;
@@ -18,13 +18,23 @@
     position: relative;
     padding: 0;
     display: grid;
+    grid-template-areas: "form" "map";
     grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
     overflow: auto;
 
+    & > :first-child {
+      grid-area: form;
+    }
+
     form {
       padding: 1rem;
       margin: 0;
+      overflow: auto;
+      select {
+        flex: 1 1 30%;
+        max-width: calc(100vw - 4rem - 2px);
+      }
     }
 
     .error {
@@ -35,9 +45,46 @@
       text-align: center;
       width: 100%;
     }
-  }
 
-  .map {
-    background: #fff;
+    .scale-denominators {
+      pointer-events: none;
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      padding: 0.5rem;
+      color: #0009;
+      gap: 0.5rem;
+      background-color: #fffa;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--border-radius);
+    }
+
+    .loading {
+      padding: 1.4rem;
+      justify-content: center;
+    }
+
+    .map {
+      grid-area: map;
+      background: #fff;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      z-index: 1;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: var(--border-radius);
+      height: 60%;
+      overflow: auto;
+      min-width: 25%;
+      max-width: min(80%, 600px);
+
+      --h6-color: #222;
+    }
   }
 }

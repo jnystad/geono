@@ -3,10 +3,12 @@
   align-items: center;
   gap: var(--spacing);
 
-  input,
-  select,
-  button {
-    width: auto;
+  & > {
+    input:not([type="radio"]):not([type="checkbox"]):not([type="search"]),
+    select,
+    button {
+      width: auto;
+    }
   }
 
   [data-grow] {

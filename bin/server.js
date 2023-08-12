@@ -118,6 +118,47 @@ app.get("/api/id/:uuid", async (req, res) => {
   }
 });
 
+app.get("/api/wms/capabilities/:uuid", async (req, res) => {
+  const sql = `SELECT url, protocol FROM csw_records WHERE uuid = ?`;
+  try {
+    const row = await db.getAsync(sql, [req.params.uuid]);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    if (!row.protocol.startsWith("OGC:WMS")) return res.status(400).json({ error: "Not a WMS" });
+    const url = new URL(row.url);
+    url.searchParams.set("service", "WMS");
+    url.searchParams.set("request", "GetCapabilities");
+    url.searchParams.set("version", "1.3.0");
+    const response = await fetch(url.toString());
+    if (!response.ok) return res.status(500).json({ error: "Failed to fetch GetCapabilities" });
+    const text = await response.text();
+    res.set("Content-Type", "application/xml");
+    res.send(text);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/wmts/capabilities/:uuid", async (req, res) => {
+  const sql = `SELECT url, protocol FROM csw_records WHERE uuid = ?`;
+  try {
+    const row = await db.getAsync(sql, [req.params.uuid]);
+    if (!row) return res.status(404).json({ error: "Not found" });
+    if (!row.protocol.startsWith("OGC:WMTS")) return res.status(400).json({ error: "Not a WMTS" });
+    const url = new URL(row.url);
+    if (!row.url.endsWith(".xml")) {
+      url.searchParams.set("service", "WMTS");
+      url.searchParams.set("request", "GetCapabilities");
+    }
+    const response = await fetch(url.toString());
+    if (!response.ok) return res.status(500).json({ error: "Failed to fetch GetCapabilities" });
+    const text = await response.text();
+    res.set("Content-Type", "application/xml");
+    res.send(text);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(3000, async () => {
   const dbWatcher = chokidar.watch(dbFilePath, { awaitWriteFinish: true, ignoreInitial: true });
 
