@@ -1,0 +1,5 @@
+{
+  "$schema": "https://unpkg.com/knip@2/schema.json",
+  "entry": ["src/index.tsx", "bin/server.js", "bin/download.js", "bin/ingest.js", "bin/process.js", "bin/ping.js"],
+  "ignoreDependencies": ["@picocss/pico", "eslint-plugin-node"]
+}

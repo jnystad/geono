@@ -1,6 +1,6 @@
 import { RecordType } from "./RecordType";
 
-export interface BasicRecord {
+interface BasicRecord {
   uuid: string;
   type: RecordType;
   title: string;
@@ -44,12 +44,12 @@ export interface Constraints {
   securityConstraintsNote?: string;
 }
 
-export interface Graphic {
+interface Graphic {
   url: string;
   type: string;
 }
 
-export interface Distribution {
+interface Distribution {
   name: string;
   version?: string;
   url?: string;

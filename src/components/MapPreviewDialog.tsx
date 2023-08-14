@@ -19,11 +19,9 @@ import { degreesToStringHDMS } from "ol/coordinate";
 import { WmtsLayerRenderer } from "./WmtsLayerRenderer";
 import { WmsLayerRenderer } from "./WmsLayerRenderer";
 import { LoadingIndicator } from "../ol/LoadingIndicator";
+import { useWmtsCapabilities } from "../hooks/useWmtsCapabilities";
 import "ol/ol.css";
 import "./MapPreviewDialog.scss";
-import TileGrid from "ol/tilegrid/TileGrid";
-import WMTSTileGrid from "ol/tilegrid/WMTS";
-import { useWmtsCapabilities } from "../hooks/useWmtsCapabilities";
 
 proj4.defs("EPSG:4258", "+proj=longlat +ellps=GRS80 +no_defs +type=crs");
 register(proj4);
